@@ -13,6 +13,11 @@ namespace Microsoft.AspNetCore.Mvc.ModelBinding.Validation
         private HashSet<object> _hashSet;
         private bool _useHashSet = false;
 
+        public DynamicStack()
+        {
+            _list = new List<object>();
+        }
+
         public int Count
         {
             get
@@ -26,11 +31,6 @@ namespace Microsoft.AspNetCore.Mvc.ModelBinding.Validation
                     return _list.Count;
                 }
             }
-        }
-
-        public DynamicStack()
-        {
-            _list = new List<object>();
         }
 
         public void Push(object model)
