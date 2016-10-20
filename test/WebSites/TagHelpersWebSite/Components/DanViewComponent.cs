@@ -26,7 +26,7 @@ namespace TagHelpersWebSite
                 .Replace("#", colorReplacement)
                 .Replace(Environment.NewLine, "<br>");
 
-            return View("Dan", resultString);
+            return View(resultString);
         }
 
         private const string DanString = @"

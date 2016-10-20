@@ -10,11 +10,13 @@ namespace TagHelpersWebSite
     {
         public IViewComponentResult Invoke(string website, int year)
         {
-            var dict = new Dictionary<string, object>();
-            dict["website"] = website;
-            dict["year"] = year;
+            var dict = new Dictionary<string, object>
+            {
+                ["website"] = website,
+                ["year"] = year
+            };
 
-            return View("Copyright", dict);
+            return View(dict);
         }
     }
 }
