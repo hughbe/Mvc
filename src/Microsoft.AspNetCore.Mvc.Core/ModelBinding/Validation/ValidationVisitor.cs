@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Microsoft.AspNetCore.Mvc.Internal;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Internal;
 
 namespace Microsoft.AspNetCore.Mvc.ModelBinding.Validation
 {
@@ -27,7 +28,7 @@ namespace Microsoft.AspNetCore.Mvc.ModelBinding.Validation
         private ModelMetadata _metadata;
         private IValidationStrategy _strategy;
 
-        private DynamicStack _currentPath;
+        private ValidationStack _currentPath;
 
         /// <summary>
         /// Creates a new <see cref="ValidationVisitor"/>.
@@ -67,7 +68,7 @@ namespace Microsoft.AspNetCore.Mvc.ModelBinding.Validation
             _validationState = validationState;
 
             _modelState = actionContext.ModelState;
-            _currentPath = new DynamicStack();
+            _currentPath = new ValidationStack();
         }
 
         /// <summary>
@@ -158,13 +159,11 @@ namespace Microsoft.AspNetCore.Mvc.ModelBinding.Validation
 
             if (model != null)
             {
-                if (_currentPath.Contains(model))
+                if (!_currentPath.Push(model))
                 {
                     // This is a cycle, bail.
                     return true;
                 }
-
-                _currentPath.Push(model);
             }
 
             var entry = GetValidationEntry(model);
@@ -181,6 +180,7 @@ namespace Microsoft.AspNetCore.Mvc.ModelBinding.Validation
             {
                 // Use the key on the entry, because we might not have entries in model state.
                 SuppressValidation(entry.Key);
+                _currentPath.Pop(model);
                 return true;
             }
 
@@ -357,10 +357,7 @@ namespace Microsoft.AspNetCore.Mvc.ModelBinding.Validation
                 _visitor._model = _model;
                 _visitor._strategy = _strategy;
 
-                if (_newModel != null && _visitor._currentPath.Count > 0)
-                {
-                    _visitor._currentPath.Pop(_newModel);
-                }
+                _visitor._currentPath.Pop(_newModel);
             }
         }
     }
