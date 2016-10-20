@@ -157,13 +157,10 @@ namespace Microsoft.AspNetCore.Mvc.ModelBinding.Validation
         {
             RuntimeHelpers.EnsureSufficientExecutionStack();
 
-            if (model != null)
+            if (model != null && !_currentPath.Push(model))
             {
-                if (!_currentPath.Push(model))
-                {
-                    // This is a cycle, bail.
-                    return true;
-                }
+                // This is a cycle, bail.
+                return true;
             }
 
             var entry = GetValidationEntry(model);

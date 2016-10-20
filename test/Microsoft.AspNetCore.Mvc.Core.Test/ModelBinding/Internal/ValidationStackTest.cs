@@ -2,10 +2,9 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System.Collections.Generic;
-using Microsoft.AspNetCore.Mvc.ModelBinding.Internal;
 using Xunit;
 
-namespace Microsoft.AspNetCore.Mvc.Core.Test.ModelBinding.Internal
+namespace Microsoft.AspNetCore.Mvc.ModelBinding.Internal
 {
     public class ValidationStackTest
     {
@@ -13,7 +12,7 @@ namespace Microsoft.AspNetCore.Mvc.Core.Test.ModelBinding.Internal
         [InlineData(0)]
         [InlineData(5)]
         [InlineData(ValidationStack.CutOff + 1)]
-        public void ValidationStack_PushFalseWhenAlreadyIn(int preloadCount)
+        public void Push_ReturnsFalseIfValueAlreadyExists(int preloadCount)
         {
             // Arrange
             var validationStack = new TestValidationStack();
@@ -30,7 +29,7 @@ namespace Microsoft.AspNetCore.Mvc.Core.Test.ModelBinding.Internal
         [InlineData(0)]
         [InlineData(5)]
         [InlineData(ValidationStack.CutOff + 1)]
-        public void ValidationStack_PushAndPop(int preloadCount)
+        public void Pop_RemovesValueFromTheStack(int preloadCount)
         {
             // Arrange
             var validationStack = new TestValidationStack();
@@ -50,22 +49,20 @@ namespace Microsoft.AspNetCore.Mvc.Core.Test.ModelBinding.Internal
         [InlineData(0)]
         [InlineData(5)]
         [InlineData(ValidationStack.CutOff + 1)]
-        public void ValidationStack_PopNull(int preloadCount)
+        public void Pop_DoesNotThrowIfValueIsNull(int preloadCount)
         {
             // Arrange
             var validationStack = new TestValidationStack();
-            var model = "This is a value";
 
             PreLoad(preloadCount, validationStack);
 
-            // Act
-            validationStack.Push(model);
+            // Act & Assert
             // Poping null when it's not there must not throw
             validationStack.Pop(null);
         }
 
         [Fact]
-        public void ValidationStack_MoveToHashSet()
+        public void PushingMoreThanCutOffElements_SwitchesToHashSet()
         {
             // Arrange
             var size = ValidationStack.CutOff + 1;
@@ -78,7 +75,6 @@ namespace Microsoft.AspNetCore.Mvc.Core.Test.ModelBinding.Internal
             }
 
             // Act & Assert
-
             foreach (var model in models)
             {
                 validationStack.Push(model);
@@ -98,7 +94,7 @@ namespace Microsoft.AspNetCore.Mvc.Core.Test.ModelBinding.Internal
 
         private void PreLoad(int preloadCount, ValidationStack stack)
         {
-            for (int i = 0; i < preloadCount; i++)
+            for (var i = 0; i < preloadCount; i++)
             {
                 stack.Push(i);
             }
