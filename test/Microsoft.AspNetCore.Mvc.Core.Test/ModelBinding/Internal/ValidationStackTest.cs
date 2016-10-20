@@ -96,9 +96,9 @@ namespace Microsoft.AspNetCore.Mvc.Core.Test.ModelBinding.Internal
             Assert.True(validationStack.UsingHashSet());
         }
 
-        private void PreLoad(int preload, ValidationStack stack)
+        private void PreLoad(int preloadCount, ValidationStack stack)
         {
-            for (int i = 0; i < preload; i++)
+            for (int i = 0; i < preloadCount; i++)
             {
                 stack.Push(i);
             }
@@ -113,19 +113,19 @@ namespace Microsoft.AspNetCore.Mvc.Core.Test.ModelBinding.Internal
         {
             public bool Contains(object model)
             {
-                if (_hashSet != null)
+                if (HashSet != null)
                 {
-                    return _hashSet.Contains(model);
+                    return HashSet.Contains(model);
                 }
                 else
                 {
-                    return _list.Contains(model);
+                    return List.Contains(model);
                 }
             }
 
             public bool UsingHashSet()
             {
-                return _hashSet != null;
+                return HashSet != null;
             }
         }
     }
